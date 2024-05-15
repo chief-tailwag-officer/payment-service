@@ -1,8 +1,8 @@
 from flask import Request
 
 from src import User, db, app
+from src.api.api_exception import ApiException
 from src.api.dto.user_response import UserResponse
-from src.services import transfer_service
 
 
 def create_user(request: Request):
@@ -22,7 +22,11 @@ def create_user(request: Request):
 def add_promotion(request: Request, user_id):
     if request.is_json:
         amount = request.json.get("amount")
-        user = transfer_service.change_balance(user_id, amount)
+        user = User.query.filter_by(uuid=user_id).first()
+
+        user.balance = user.balance + amount
+        db.session.add(user)
+        db.session.commit()
 
         app.logger.info(f'Added promotional money: {user.uuid}')
         return UserResponse(user).to_json(), 201
@@ -30,10 +34,15 @@ def add_promotion(request: Request, user_id):
         return {"error": "Only application/json content type is supported"}
 
 
-def get_user(id):
-    user = User.query.filter_by(uuid=id).first()
+def get_user(user_id):
+    user = fetch_user(user_id)
+    return UserResponse(user).to_json(), 201
+
+
+def fetch_user(user_id):
+    user = User.query.filter_by(uuid=user_id).first()
 
     if user:
-        return UserResponse(user).to_json(), 201
+        return user
     else:
-        return {"error": f'User with id \'{id}\' not fount'}, 404
+        raise ApiException("User not found!", 404)

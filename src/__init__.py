@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
+from src.api.api_exception import ApiException
 from src.config.config import Config
 
 # loading environment variables
@@ -34,6 +35,7 @@ db.init_app(app)
 
 migrate = Migrate(app, db)
 from src.domain.user import User
+from src.domain.transfer import Transfer
 
 # Register Routes
 from src.routes import api
