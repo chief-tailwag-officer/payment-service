@@ -10,6 +10,11 @@ def create_user():
     return user_service.create_user(request)
 
 
-@users.route('/<uuid:id>', methods=["GET"])
-def get_user(id):
-    return user_service.get_user(id)
+@users.route('/<uuid:user_id>', methods=["GET"])
+def get_user(user_id):
+    return user_service.get_user(user_id)
+
+
+@users.route('/<uuid:user_id>/add-promo', methods=["POST"])
+def add_promotion(user_id):
+    return user_service.add_promotion(request, user_id)
