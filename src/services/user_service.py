@@ -2,20 +2,17 @@ from flask import Request
 
 from src import User, db, app
 from src.api.api_exception import ApiException
-from src.api.dto.user_response import UserResponse
+from src.api.dto.user import UserResponse, UserRequest
 
 
-def create_user(request: Request):
-    if request.is_json:
-        user = User(full_name=request.json.get("fullname"), balance=0)
+def create_user(request: UserRequest):
+    user = User(request.full_name, 0)
 
-        db.session.add(user)
-        db.session.commit()
+    db.session.add(user)
+    db.session.commit()
 
-        app.logger.info(f'Create new user: {user.uuid}')
-        return UserResponse(user).to_json(), 201
-    else:
-        return {"error": "Only application/json content type is supported"}
+    app.logger.info(f'Create new user: {user.uuid}')
+    return UserResponse(user).to_json(), 201
 
 
 # This is for testing purposes

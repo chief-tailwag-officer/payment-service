@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 
+from src.api.dto.user import UserRequest
 from src.services import user_service
 
 users = Blueprint("users", __name__)
@@ -7,7 +8,7 @@ users = Blueprint("users", __name__)
 
 @users.route('', methods=["POST"])
 def create_user():
-    return user_service.create_user(request)
+    return user_service.create_user(UserRequest(request))
 
 
 @users.route('/<uuid:user_id>', methods=["GET"])
